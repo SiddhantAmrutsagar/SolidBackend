@@ -1,0 +1,17 @@
+{
+  "name": "solidbackend",
+  "version": "1.0.0",
+  "description": "This project is build to learn the advance js Backend my making the  Playit application(Clone of Youtube).",
+  "keywords": [
+    "Backend",
+    "javascript",
+    "66lakhCTC"
+  ],
+  "license": "ISC",
+  "author": "Siddhant Amrutsagar",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
