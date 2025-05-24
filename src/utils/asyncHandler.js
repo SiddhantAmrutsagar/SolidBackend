@@ -1,6 +1,8 @@
 //using promises
+//its an wrapper in which every time we call the function we can handle the request and response
+
 const asyncHandler = (requestHandler) => {
-    (req, res, next) =>{
+    return (req, res, next) =>{
         Promise.resolve(requestHandler(req, res, next)).
         catch((err)=> next(err))
     }
