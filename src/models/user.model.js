@@ -1,7 +1,6 @@
 import mongoose, {Schema } from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { useCallback } from "react";
 
 const userSchema = new Schema(
     {
@@ -35,7 +34,7 @@ const userSchema = new Schema(
         },
         watchHistory:[
             {
-                type:Schema.Types.ObjectId,
+                type: Schema.Types.ObjectId,
                 ref:"Video"
             }
         ],
@@ -53,11 +52,12 @@ const userSchema = new Schema(
     }
 )
 
+
 //the pre middleware function are used to perform some operation before the document is saved to the database 
 //like encrypting the password before saving it to the database
 userSchema.pre("save", async function(next){
     //use to verify the password is modified if not modified then the dont change the value of the password again
-    if(this.isModified("password"))
+    if(!this.isModified("password"))
         return next();
     this.password = await bcrypt.hash(this.password, 10);
     next()
@@ -74,12 +74,13 @@ userSchema.methods.generateAccessToken = function(){
     return jwt.sign(
         //payload
         {
-        _id: this._id,
-        email: this.email,
-        username:this.username,
-        fullName:this.fullName
+            _id: this._id,
+            email: this.email,
+            username:this.username,
+            fullName:this.fullName
         },
-        process.env.ACCESS_TOKEN_SECRET,{
+        process.env.ACCESS_TOKEN_SECRET,
+        {
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY
         }
     )
@@ -89,10 +90,11 @@ userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         //payload
         {
-        _id: this._id,
+            _id: this._id,
         
         },
-        process.env.REFRESH_TOKEN_SECRET,{
+        process.env.REFRESH_TOKEN_SECRET,
+        {
             expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         }
     )
