@@ -52,25 +52,29 @@ const userSchema = new Schema(
     }
 )
 
-
 //the pre middleware function are used to perform some operation before the document is saved to the database 
 //like encrypting the password before saving it to the database
 userSchema.pre("save", async function(next){
     //use to verify the password is modified if not modified then the dont change the value of the password again
-    if(!this.isModified("password"))
+    //this refers to the current user document.
+    //.isModified("password") checks if the password field has been changed or newly set.
+    //.isModified("fieldName") checks if a specific field (like "password") was modified/changed in the current save/update operation.
+    if(!this.isModified("password")){
         return next();
+    }
     this.password = await bcrypt.hash(this.password, 10);
     next()
-})
+});
 
 //custom method to generate the JWT token
 //bcrypt can hash the password and also compare the password
-userSchema.methods.ispasswordCorrect = async function
-(password){
+userSchema.methods.ispasswordCorrect = async function(password)
+{
     return await bcrypt.compare(password, this.password)
 }
 
 userSchema.methods.generateAccessToken = function(){
+    //jwt.sign() is a function from the jsonwebtoken library that creates a JWT token.
     return jwt.sign(
         //payload
         {
@@ -92,7 +96,7 @@ userSchema.methods.generateRefreshToken = function(){
         {
             _id: this._id,
         
-        },
+        }, 
         process.env.REFRESH_TOKEN_SECRET,
         {
             expiresIn: process.env.REFRESH_TOKEN_EXPIRY
