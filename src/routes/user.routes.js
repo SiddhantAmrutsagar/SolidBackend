@@ -39,7 +39,7 @@ router.route("/refresh-token").post(refreshAccessToken)
 router.route("/current-user").post(verifyJWT, getCurrentUser)
 router.route("/update-details").patch(verifyJWT, updateAccountDetails)
 router.route("/change-password").post(verifyJWT, changeCurrentPassword)
-router.route("/update-Avater").patch(
+router.route("/update-Avatar").patch(
     verifyJWT,
     upload.single("avatar"),
     updateUserAvatar
