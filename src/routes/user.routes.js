@@ -44,7 +44,7 @@ router.route("/update-Avatar").patch(
     upload.single("avatar"),
     updateUserAvatar
 )
-router.route("/upadate-coverImage").patch(
+router.route("/update-coverImage").patch(
     verifyJWT,
     upload.single("coverImage"),
     updateUserCoverImage
