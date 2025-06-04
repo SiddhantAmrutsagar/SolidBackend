@@ -70,6 +70,8 @@ userSchema.pre("save", async function(next){
 //bcrypt can hash the password and also compare the password
 userSchema.methods.ispasswordCorrect = async function(password)
 {
+    //password: entered while logging in 
+    //this.password: password stored in the database
     return await bcrypt.compare(password, this.password)
 }
 
