@@ -17,10 +17,6 @@ import mongoose from "mongoose";
 const generateAccessAndRefreshToken = async (userId) =>{
     try {
         const user = await User.findById(userId)
-<<<<<<< HEAD
-=======
-        
->>>>>>> d905355a67d1525765d3ad67e0b090550fce0391
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken()
         
@@ -230,7 +226,6 @@ const refreshAccessToken = asyncHandler(async (req, res)=>{
     console.log("/n incomingRefreshToken: ", incomingRefreshToken);
     
     if(!incomingRefreshToken){
-<<<<<<< HEAD
         throw new ApiError(401, "Unauthorized Refresh Token")
     }
 
@@ -243,21 +238,6 @@ const refreshAccessToken = asyncHandler(async (req, res)=>{
 
         const user = await User.findById(decodedToken?._id)
         console.log("user refresh token: ", user?.refreshToken);
-=======
-        throw new ApiError(401, "Unauthorized request")
-    }
- 
-    try { 
-        console.log("process.env.REFRESH_TOKEN_SECRET: ", process.env.REFRESH_TOKEN_SECRET);
-        
-        const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET)
-        console.log("decodedToken: ", decodedToken);
-        
-
-        const user = await User.findById(decodedToken?._id)
-        console.log("user refresh token: ", user?.refreshToken);
-    
->>>>>>> d905355a67d1525765d3ad67e0b090550fce0391
 
         if(!user){
             throw new ApiError(401, "Invalid Refresh Token")
@@ -272,8 +252,7 @@ const refreshAccessToken = asyncHandler(async (req, res)=>{
             secure:true
         }
 
-<<<<<<< HEAD
-        const {accessToken, newRefreshToken} = await generateAccessAndRefreshToken(user._id)
+        const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
         console.log("regenerated access tokens: ", accessToken );
         console.log("regenerated refresh tokens: ", refreshToken );
         
@@ -281,18 +260,7 @@ const refreshAccessToken = asyncHandler(async (req, res)=>{
         return res
         .status(200)
         .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", newRefreshToken, options)
-=======
-        const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
-        
-        console.log("regenerated access tokens: ", accessToken );
-        console.log("regenerated refresh tokens: ", refreshToken );
-        
-        return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
->>>>>>> d905355a67d1525765d3ad67e0b090550fce0391
         .json(
             new ApiResponse(
                 200,
