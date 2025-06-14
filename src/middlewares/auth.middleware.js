@@ -9,8 +9,8 @@ import jwt from "jsonwebtoken"
 export const verifyJWT = asyncHandler(async (req, _, next) =>{
     //res is not in use so ("_")
     try {
-        console.log(req.cookies);
-        
+        console.log("auth middleware run successfully:", req.cookies);
+
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")  
         console.log("token:",token);
         
