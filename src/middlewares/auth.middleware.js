@@ -10,7 +10,11 @@ export const verifyJWT = asyncHandler(async (req, _, next) =>{
     //res is not in use so ("_")
     try {
         console.log("auth middleware run successfully:", req.cookies);
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> d905355a67d1525765d3ad67e0b090550fce0391
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "")  
         console.log("token:",token);
         
@@ -38,7 +42,7 @@ export const verifyJWT = asyncHandler(async (req, _, next) =>{
         //attach the user to the request object so that it can be accessed in the next middleware or route handler
         next();
 
-    } catch (error) {
+    } catch (error) { 
         throw new ApiError(401, error?.message || "invalid access token")
     }
 
