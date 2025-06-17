@@ -16,12 +16,14 @@ import mongoose from "mongoose";
 //putting generateAccessToken and generateRefreshToken in the a method
 const generateAccessAndRefreshToken = async (userId) =>{
     try {
-        const user = await User.findOne(userId)
+        const user = await User.findById(userId)
         const accessToken = user.generateAccessToken()
         const refreshToken = user.generateRefreshToken()
-
+        
         user.refreshToken = refreshToken
-        await user.save({ validateBeforeSave: false})
+        await user.save({ validateBeforeSave: false })
+        
+        console.log("generateAccessAndRefreshToken user: ", user);
 
         return { accessToken, refreshToken }
 
@@ -147,7 +149,6 @@ const loginUser = asyncHandler(async (req, res)=>{
     }
 
     const {accessToken, refreshToken} = await generateAccessAndRefreshToken(user._id)
-
     // user object the refreshToken is empty
     //set the refresh token in the user document
     // user.refreshToken = refreshToken
@@ -217,17 +218,27 @@ const logoutUser = asyncHandler(async (req, res)=>{
 
 const refreshAccessToken = asyncHandler(async (req, res)=>{
 
-    const incomingRefreshToken = req.cookies?.accessToken || req.body?.accessToken
-
+    console.log("/n refreshAccessToken route is running");
+    
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+    
+    console.log("cookies token: ", req.cookies); 
+    console.log("/n incomingRefreshToken: ", incomingRefreshToken);
+    
     if(!incomingRefreshToken){
-        throw new ApiError(401, "Invalid Refresh Token")
+        throw new ApiError(401, "Unauthorized Refresh Token")
     }
 
     try {
+        console.log("process.env.REFRESH_TOKEN_SECRET: ", process.env.REFRESH_TOKEN_SECRET);
+
         const decodedToken = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET)
     
+        console.log("decodedToken: ", decodedToken);
+
         const user = await User.findById(decodedToken?._id)
-    
+        console.log("user refresh token: ", user?.refreshToken);
+
         if(!user){
             throw new ApiError(401, "Invalid Refresh Token")
         }
@@ -242,14 +253,19 @@ const refreshAccessToken = asyncHandler(async (req, res)=>{
         }
 
         const {accessToken, newRefreshToken} = await generateAccessAndRefreshToken(user._id)
-    
+        console.log("regenerated access tokens: ", accessToken );
+        console.log("regenerated refresh tokens: ", newRefreshToken );
+        
     
         return res
         .status(200)
         .cookie("accessToken", accessToken, options)
-        .cookie("accessToken", newRefreshToken, options)
+        .cookie("refreshToken", newRefreshToken, options)
         .json(
-            new ApiResponse(200, {accessToken, refreshToken: newRefreshToken}, "Access Token Refreshed")
+            new ApiResponse(
+                200,
+                {accessToken, refreshToken: newRefreshToken},
+                "Access Token Refreshed")
         )
     } catch (error) {
         throw new ApiError(401, error?.message ||  "Invalid Refresh Token")
